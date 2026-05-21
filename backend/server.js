@@ -2,7 +2,9 @@ feature/taches
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 require('dotenv').config();
+
 
 // استدعاء مسارات إدارة المهام التي قمت ببرمجتها أنت يا محمد
 const taskRoutes = require('./routes/taskRoutes');
@@ -15,7 +17,7 @@ app.use(express.json());
 
 // تفعيل مسارات المهام الخاصة بك تحت المسار الرئيسي /api
 app.use('/api', taskRoutes);
-
+app.use('/api/dashboard', dashboardRoutes);
 // مسار تجريبي للتأكد من عمل السيرفر
 app.get('/', (req, res) => {
     res.send('Server TaskFlow fonctionne بنجاح! 🚀');
