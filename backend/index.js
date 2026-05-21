@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 
 // الاتصال بقاعدة البيانات وتشغيل السيرفر
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/taskflow';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/taskflow';
 
 mongoose.connect(MONGO_URI)
     .then(() => {
