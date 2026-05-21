@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Task = require('../models/Task'); // استدعاء المخطط الذي أنشأته
+const Task = require('../models/Task');
 
-// 1. جلب جميع مهام مشروع معين (GET /api/projects/:id/tasks)
+// Get all tasks for a project
 router.get('/projects/:id/tasks', async (req, res) => {
     try {
         const tasks = await Task.find({ project: req.params.id });
@@ -12,7 +12,7 @@ router.get('/projects/:id/tasks', async (req, res) => {
     }
 });
 
-// 2. إنشاء مهمة جديدة (POST /api/tasks)
+// Create a new task
 router.post('/tasks', async (req, res) => {
     const task = new Task({
         title: req.body.title,
@@ -28,15 +28,16 @@ router.post('/tasks', async (req, res) => {
     }
 });
 
-// 3. تحديث حالة المهمة فقط عبر PATCH المطلوب في التقييم
+// Update task status
 router.patch('/tasks/:id/status', async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: 'Tâche non trouvée' });
-        
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+
         if (req.body.status) {
             task.status = req.body.status;
         }
+        
         const updatedTask = await task.save();
         res.json(updatedTask);
     } catch (err) {
@@ -44,12 +45,12 @@ router.patch('/tasks/:id/status', async (req, res) => {
     }
 });
 
-// 4. حذف مهمة (DELETE /api/tasks/:id)
+// Delete a task
 router.delete('/tasks/:id', async (req, res) => {
     try {
         const task = await Task.findByIdAndDelete(req.params.id);
-        if (!task) return res.status(404).json({ message: 'Tâche non trouvée' });
-        res.json({ message: 'Tâche supprimée avec succès' });
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+        res.json({ message: 'Task deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
