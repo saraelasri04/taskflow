@@ -10,5 +10,6 @@ if (!token) {
       <a href="/login.html">Se connecter</a>
     </div>
   `;
-} else {
+ } else {
   renderDashboard(); // page d'accueil après connexion
+ } 
