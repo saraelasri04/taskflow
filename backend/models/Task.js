@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/taskflow';
 
+ feature/auth-assignment
 mongoose
   .connect(MONGO_URI)
   .then(() => {
@@ -40,3 +41,46 @@ mongoose
   .catch((err) => {
     console.error('Erreur MongoDB :', err.message);
   });
+
+const taskSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, 'Le titre de la tâche est obligatoire'],
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      trim: true,
+    },
+
+    priority: {
+      type: String,
+      enum: ['basse', 'moyenne', 'haute'],
+      default: 'moyenne',
+    },
+
+    status: {
+      type: String,
+      enum: ['à faire', 'en cours', 'terminée'],
+      default: 'à faire',
+    },
+
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Project',
+      required: true,
+    },
+
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Task', taskSchema);
+ develop
