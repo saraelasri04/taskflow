@@ -13,10 +13,7 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       maxlength: [500, 'La description ne peut pas dépasser 500 caractères'],
     },
-    deadline: {
-      type: Date,
-      default: null,
-    },
+    deadline: { type: Date, default: null },
     status: {
       type: String,
       enum: {
@@ -33,5 +30,27 @@ const projectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// ─── Cascade delete ────────────────────────────────────────────────────────────
+projectSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  try {
+    await mongoose.model('Task').deleteMany({ project: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+projectSchema.pre('findOneAndDelete', async function (next) {
+  try {
+    const doc = await this.model.findOne(this.getFilter());
+    if (doc) {
+      await mongoose.model('Task').deleteMany({ project: doc._id });
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = mongoose.model('Project', projectSchema);
