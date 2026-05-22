@@ -1,21 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Récupère le token JWT stocké par la fonctionnalité 1
-const getToken = () => localStorage.getItem('token');
-
-// Instance Axios configurée — toutes les requêtes partent vers le backend
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+const API = axios.create({
+  baseURL: "http://localhost:5000/api",
 });
 
-// Intercepteur : joint automatiquement le JWT à chaque requête
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+// token auto attach
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem("token");
+  if (token) req.headers.Authorization = `Bearer ${token}`;
+  return req;
 });
+
+export default API;
 
 // ─── Fonctions appelées depuis les pages ──────────────────────────────────────
 

@@ -1,22 +1,34 @@
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
-export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+import API from "../api/api.js";
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+export async function renderDashboard() {
 
-  return (
-    <div>
-      <h1>Bonjour, {user?.fullName} 👋</h1>
+  const app = document.getElementById("app");
 
-      <button onClick={handleLogout}>
-        Se déconnecter
-      </button>
-    </div>
-  );
+  app.innerHTML = `
+    <h1>Mes tâches</h1>
+    <div id="mes-taches"></div>
+  `;
+
+  await chargerMesTaches();
+}
+
+async function chargerMesTaches() {
+
+  const res = await API.get("/tasks?assignedTo=me");
+
+  const container = document.getElementById("mes-taches");
+
+  container.innerHTML = "";
+
+  res.data.forEach(task => {
+
+    container.innerHTML += `
+      <div class="task-card">
+        <h3>${task.titre}</h3>
+        <p>${task.statut}</p>
+        <p>${task.priorite}</p>
+      </div>
+    `;
+  });
 }
