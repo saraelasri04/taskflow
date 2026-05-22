@@ -1,34 +1,47 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
 
-// استدعاء مسارات إدارة المهام الخاصة بك
 const taskRoutes = require('./routes/taskRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const authRoutes = require('./routes/auth');
+const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
 
-// الـ Middleware الأساسية للبيانات والـ CORS
 app.use(cors());
 app.use(express.json());
 
-// تفعيل مسارات المهام الخاصة بك تحت /api
 app.use('/api', taskRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/auth', authRoutes);
 
-// مسار تجريبي للتأكد من عمل السيرفر
-app.get('/', (req, res) => {
-    res.send('Server TaskFlow fonctionne بنجاح! 🚀');
+app.get('/api/profile', authMiddleware, (req, res) => {
+  res.json({
+    message: `Bonjour utilisateur ${req.user.id}`,
+  });
 });
 
-// الاتصال بقاعدة البيانات وتشغيل السيرفر
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/taskflow';
+app.get('/', (req, res) => {
+  res.send('Server TaskFlow fonctionne 🚀');
+});
 
-mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log('Connecté à MongoDB avec succès ! 🍃');
-        app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT} ⚡`));
-    })
-    .catch(err => {
-        console.error('Erreur de connexion à MongoDB:', err.message);
+const PORT = process.env.PORT || 5000;
+
+const MONGO_URI =
+  process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/taskflow';
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connecté');
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
     });
+  })
+  .catch((err) => {
+    console.error('❌ Erreur MongoDB :', err.message);
+  });
